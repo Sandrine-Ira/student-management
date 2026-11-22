@@ -7,7 +7,40 @@ pipeline {
     // Define the stages of the pipeline
     stages {
 
-        // Stage 1: Build the Docker image
+        // Stage 1: Install project dependencies
+        stage('Install Dependencies') {
+            steps {
+
+                // Install dependencies using package-lock.json
+                sh 'npm ci'
+
+                echo 'Dependencies installed successfully!'
+            }
+        }
+
+        // Stage 2: Run unit tests
+        stage('Unit Testing') {
+            steps {
+
+                // Test whether HTML files exist and contain HTML elements
+                sh 'npm run test:unit'
+
+                echo 'Unit testing completed successfully!'
+            }
+        }
+
+        // Stage 3: Run integration tests
+        stage('Integration Testing') {
+            steps {
+
+                // Test whether website pages return HTTP 200
+                sh 'npm run test:integration'
+
+                echo 'Integration testing completed successfully!'
+            }
+        }
+
+        // Stage 4: Build the Docker image
         stage('Build') {
             steps {
 
@@ -33,7 +66,7 @@ pipeline {
 
         // Display a message when the build succeeds
         success {
-            echo 'SUCCESS: DevOps application built successfully.'
+            echo 'SUCCESS: All tests passed and Docker image built successfully.'
         }
 
         // Display a message when the build fails

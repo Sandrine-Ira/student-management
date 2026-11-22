@@ -1,0 +1,14 @@
+{
+  "name": "student-management",
+  "version": "1.0.0",
+  "description": "Student Management website automated testing",
+  "scripts": {
+    "test": "jest --runInBand",
+    "test:unit": "jest --runInBand tests/unit.test.js",
+    "test:integration": "jest --runInBand tests/integration.test.js"
+  },
+  "devDependencies": {
+    "jest": "^30.0.0",
+    "http-server": "^14.1.1"
+  }
+}
