@@ -40,7 +40,25 @@ pipeline {
             }
         }
 
-        // Stage 4: Build the Docker image
+        // Stage 4: Static Application Security Testing (SAST)
+        stage('SAST Security Scan') {
+            steps {
+
+                // Scan source code for potential security vulnerabilities
+                echo 'Scanning source code for security vulnerabilities...'
+
+                // Run Semgrep inside Docker
+                // --rm removes the temporary container after scanning
+                // $WORKSPACE provides access to the Jenkins project files
+                // --config selects security scanning rules
+                // --error makes the scan fail if findings are detected
+                sh 'docker run --rm -v "$WORKSPACE:/src" semgrep/semgrep semgrep scan --config p/security-audit --error /src'
+
+                echo 'SAST security scan completed successfully!'
+            }
+        }
+
+        // Stage 5: Build the Docker image
         stage('Build') {
             steps {
 
@@ -51,12 +69,19 @@ pipeline {
                 sh 'docker --version'
 
                 // Build the Docker image from the Dockerfile
-                // -t assigns the image name and version
-                // . specifies the current project directory
                 sh 'docker build -t devops-app:1.0 .'
 
                 // Display a completion message
                 echo 'Docker image build completed!'
+            }
+        }
+
+        // Stage 6: Pipeline Summary
+        stage('Pipeline Summary') {
+            steps {
+
+                // Display the final pipeline summary
+                echo 'Unit tests, integration tests, SAST and Docker build completed successfully!'
             }
         }
     }
@@ -66,12 +91,12 @@ pipeline {
 
         // Display a message when the build succeeds
         success {
-            echo 'SUCCESS: All tests passed and Docker image built successfully.'
+            echo 'SUCCESS: All tests and security scans passed, and Docker image built successfully.'
         }
 
         // Display a message when the build fails
         failure {
-            echo 'FAILURE: Check the Jenkins Console Output.'
+            echo 'FAILURE: Tests, security scanning or Docker build detected a problem.'
         }
 
         // Always execute this message
